@@ -1,4 +1,5 @@
 # GitHub-AI-Bot - Coding Assistant
+![GitHub AI Bot - Coding Assistant drawio](https://github.com/user-attachments/assets/58a8663b-8b03-4f4a-926a-20d3a1dced6a)
 
 ## What This Project Does
 
