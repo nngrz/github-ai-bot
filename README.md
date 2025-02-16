@@ -1,5 +1,5 @@
 # GitHub-AI-Bot - Coding Assistant
-![Alt text] (images/GitHub AI Bot - Coding Assistant.png)
+![GitHub AI Bot - Coding Assistant](images/github-ai-bot.png)
 
 ## What This Project Does
 
