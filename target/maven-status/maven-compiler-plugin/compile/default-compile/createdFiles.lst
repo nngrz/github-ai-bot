@@ -1,0 +1,8 @@
+com/githubaibot/model/GithubWebhookPayload$PullRequest$Head.class
+com/githubaibot/model/GithubWebhookPayload$PullRequest.class
+com/githubaibot/config/WebhookConfig.class
+com/githubaibot/model/GithubWebhookPayload.class
+com/githubaibot/controller/GithubWebhookController.class
+com/githubaibot/service/CodeReviewService.class
+com/githubaibot/model/GithubWebhookPayload$PullRequest$Head$Repo.class
+com/githubai/bot/GithubAiBotApplication.class
