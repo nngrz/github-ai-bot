@@ -32,6 +32,8 @@ The GitHub AI Bot – Coding Assistant is an AI-powered code review bot for all 
 This is a Spring Boot Application.  
 
 ### Requirements
+
+Make sure that you have installed locally:
 - Java 17+
 - Maven 3.9+
 
