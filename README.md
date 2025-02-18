@@ -26,3 +26,14 @@ The GitHub AI Bot – Coding Assistant is an AI-powered code review bot for all 
 ✅ Java Code Analysis – Specialized for all programming language projects.   
 
 ✅ Customizable AI Model – Uses DeepSeek or any other AI model for analysis.
+
+## Spring Boot Application
+
+### Requirements
+- Java 17+
+- Maven 3.9+
+
+### How to Run
+In order to run Maven project, install Maven is needed.  
+
+Install Maven: https://maven.apache.org/install.html
