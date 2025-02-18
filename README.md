@@ -36,17 +36,13 @@ This is a Spring Boot Application.
 - Maven 3.9+
 
 ### How to Run
-1. **Clone the repository:**
-    ```
-   git clone <repository-url>
-   cd <repository-name>
-    ```
-2. **Build the project:**
+
+1. **Build the project:**
     ```
     mvn clean install
     ```
-3. **Run the application:**
+2. **Run the application:**
     ```
     mvn spring-boot:run
     ```
-4. The server should now be running on http://localhost:8080
+3. The server should now be running on http://localhost:8080
