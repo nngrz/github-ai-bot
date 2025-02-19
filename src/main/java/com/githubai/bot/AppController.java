@@ -14,7 +14,25 @@ public class AppController {
     }
 
     @PostMapping("/webhook")
-    public ResponseEntity<?> handleWebhook() {
-        return ResponseEntity.ok().body("{\"status\": \"ok\"}");
+    public ResponseEntity<ResponseMessage> postHandler() {
+		ResponseMessage response = new ResponseMessage("ok");
+        return ResponseEntity.ok(response);
+    }
+
+	// Define a simple ResponseMessage class
+    static class ResponseMessage {
+        private String status;
+
+        public ResponseMessage(String status) {
+            this.status = status;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
     }
 }
