@@ -15,11 +15,11 @@ public class AppController {
 
     @PostMapping("/webhook")
     public ResponseEntity<ResponseMessage> postHandler() {
-		ResponseMessage response = new ResponseMessage("ok");
+        ResponseMessage response = new ResponseMessage("ok");
         return ResponseEntity.ok(response);
     }
 
-	// Define a simple ResponseMessage class
+    // Define a simple ResponseMessage class
     static class ResponseMessage {
         private String status;
 
