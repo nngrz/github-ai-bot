@@ -25,7 +25,13 @@ The GitHub AI Bot – Coding Assistant is an AI-powered code review bot for all 
 
 ✅ Java Code Analysis – Specialized for all programming language projects.   
 
-✅ Customizable AI Model – Uses DeepSeek or any other AI model for analysis.
+✅ Customizable AI Model – Uses DeepSeek or any other AI model for analysis.  
+
+## Deployment
+
+This application is deployed on **Google Cloud Platform (GCP)** using **Cloud Run**.  
+
+**Live URL:** [GitHub AI Bot](https://github-ai-bot-658818439028.europe-west1.run.app)
 
 ## Java Bot
 
