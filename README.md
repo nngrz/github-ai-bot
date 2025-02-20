@@ -27,12 +27,6 @@ The GitHub AI Bot – Coding Assistant is an AI-powered code review bot for all 
 
 ✅ Customizable AI Model – Uses DeepSeek or any other AI model for analysis.  
 
-## Deployment
-
-This application is deployed on **Google Cloud Platform (GCP)** using **Cloud Run**.  
-
-**Live URL:** [GitHub AI Bot](https://github-ai-bot-658818439028.europe-west1.run.app)
-
 ## Java Bot
 
 This is a Spring Boot Application.  
@@ -42,8 +36,9 @@ This is a Spring Boot Application.
 Make sure that you have installed locally:
 - Java 17+
 - Maven 3.9+
+- Google Cloud SDK (`gcloud` CLI) configured with your project
 
-### How to Run
+### How to Run Locally
 
 1. **Build the project:**
     ```
@@ -53,4 +48,31 @@ Make sure that you have installed locally:
     ```
     mvn spring-boot:run
     ```
-3. The server should now be running on http://localhost:8080
+3. The server should now be running on http://localhost:8080  
+
+## Deployment to Google Cloud Platform (GCP)
+
+This application is deployed on **Google Cloud Platform (GCP)** using **Cloud Run**.  
+
+**Live URL:** [GitHub AI Bot](https://github-ai-bot-658818439028.europe-west1.run.app)
+
+### Basic Deployment Steps  
+
+1. **Build and submit the image to Google Cloud Build:**  
+    ```sh
+    gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/github-ai-bot
+    ```  
+2. **Deploy the application to Cloud Run:**  
+    ```sh
+    gcloud run deploy github-ai-bot --image gcr.io/YOUR_PROJECT_ID/github-ai-bot --platform managed --region europe-west1 --allow-unauthenticated
+    ```  
+3. Once deployed, you'll get a service URL like:  
+    ```
+    https://github-ai-bot-YOUR_PROJECT_ID.europe-west1.run.app
+    ```
+4. Test the service:  
+    ```sh
+    curl https://github-ai-bot-YOUR_PROJECT_ID.europe-west1.run.app
+    ```  
+
+For a more detailed setup, refer to the [Google Cloud Run documentation](https://cloud.google.com/run/docs/deploying).
