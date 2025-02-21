@@ -1,37 +1,31 @@
 # GitHub-AI-Bot - Coding Assistant
 ![GitHub AI Bot - Coding Assistant](images/github-ai-bot.png)
 
-## What This Project Does
-
 The GitHub AI Bot – Coding Assistant is an AI-powered code review bot for all programming language projects. It automatically analyzes pull requests (PRs) and provides feedback on code quality, best practices, and possible improvements.
 
 ### How It Works
 
-1️⃣ Developer pushes a commit via PR → The bot is triggered via GitHub Webhook.  
+1️⃣ Developer pushes a commit via PR
 
-2️⃣ GitHub Webhook triggers the AI Bot → Hosted on Google Cloud Platform.  
+2️⃣ GitHub Webhook triggers the AI Bot
 
-3️⃣ Bot fetches the PR code → Extracts the Java files that were modified.  
+3️⃣ Bot fetches the PR code
 
-4️⃣ Bot sends the code to an AI model → Uses DeepSeek API (or another LLM) for analysis.  
+4️⃣ Bot sends the code to an AI model - uses DeepSeek API (or another LLM) for analysis.  
 
-5️⃣ Bot comments on the PR → Provides AI-generated code reviews with suggestions and fixes. 
+5️⃣ Bot comments on the PR. Provides AI-generated code reviews with suggestions and fixes. 
 
 ### Features
 
 ✅ Automated Code Review – AI detects bad practices and suggests improvements.  
 
-✅ Seamless GitHub Integration – Works automatically when a PR is opened.  
-
-✅ Java Code Analysis – Specialized for all programming language projects.   
+✅ Code Analysis – Specialized for all programming language projects.   
 
 ✅ Customizable AI Model – Uses DeepSeek or any other AI model for analysis.
 
-## Java Bot
+## How to Run Locally
 
 This is a Spring Boot Application.
-
-### How to Run Locally
 
 #### Requirements
 
@@ -57,7 +51,7 @@ This application is deployed on **Google Cloud Platform (GCP)** using **Cloud Ru
 
 **Live URL:** [GitHub AI Bot](https://github-ai-bot-658818439028.europe-west1.run.app)
 
-### Requirements
+#### Requirements
 
 Make sure that you have installed locally:  
 - Google Cloud SDK (`gcloud` CLI) configured with your project.
@@ -67,11 +61,16 @@ Make sure that you have installed locally:
 1. **To deploy the Java bot, a project ID is needed:**  
 Go to the Google Cloud Console, navigate to the Project Selector page, select or create a project, and note the project ID.
 
-2. **Build and submit the image to Google Cloud Build:**
+1. **Set project ID:**  
     ```sh
-    gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/github-ai-bot
+    PROJECT_ID=<here_goes_your_project_id>
     ```  
-3. **Deploy the application to Cloud Run:** 
+
+1. **Build and submit the image to Google Cloud Build:**
     ```sh
-    gcloud run deploy github-ai-bot --image gcr.io/YOUR_PROJECT_ID/github-ai-bot --platform managed --region europe-west1 --allow-unauthenticated
+    gcloud builds submit --tag gcr.io/${PROJECT_ID:?"PROJECT_ID NOT SET"}/github-ai-bot
+    ```  
+1. **Deploy the application to Cloud Run:** 
+    ```sh
+    gcloud run deploy github-ai-bot --image gcr.io/${PROJECT_ID:?"PROJECT_ID NOT SET"}/github-ai-bot --platform managed --region europe-west1 --allow-unauthenticated
     ```
