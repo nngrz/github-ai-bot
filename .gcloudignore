@@ -1,2 +1,7 @@
-// Excluding JAR files from gcloud builds, as they are already ignored in .gitignore.
+// The .gitignore file excludes target/*.jar files. 
+// Since the `gcloud builds submit` command, by default, 
+// respects .gitignore and therefore ignores these files, 
+// we must explicitly include the .jar files for the Docker image 
+// build and upload to the GCP image repository.
+
 !target/*.jar
