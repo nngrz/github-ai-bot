@@ -1,1 +1,2 @@
+// Excluding JAR files from gcloud builds, as they are already ignored in .gitignore.
 !target/*.jar
