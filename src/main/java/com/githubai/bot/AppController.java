@@ -31,20 +31,6 @@ public class AppController {
     public ResponseEntity<Map<String, String>> getVersion() {
         return ResponseEntity.ok(Map.of("version", projectVersion));
     }
-    /*
-    @GetMapping("/version")
-    public ResponseEntity<Map<String, String>> getVersion() {
-        String version = "unknown";
-        try {
-            Properties properties = new Properties();
-            properties.load(new ClassPathResource("pom.properties").getInputStream());
-            version = properties.getProperty("version", "unknown");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return ResponseEntity.ok(Map.of("version", version));
-    }
-    */
 
     @PostMapping("/webhook")
     public ResponseEntity<ResponseMessage> postHandler() {
