@@ -35,4 +35,4 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_JAVA: true
           LINTER_RULES_PATH: .
-          JAVA_FILE_NAME: $GITHUB_WORKSPACE/checkstyle.xml
+          JAVA_FILE_NAME: checkstyle.xml
