@@ -24,9 +24,8 @@ jobs:
           # list of files that changed across commits
           fetch-depth: 0
 
-      - name: List workspace contents
-        run: ls -R ${{ github.workspace }}
-
+      - name: Set GITHUB_WORKSPACE environment variable
+        run: echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
       - name: Super-linter
         uses: super-linter/super-linter@v7.3.0 # x-release-please-version
@@ -35,4 +34,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_JAVA: true
-          JAVA_FILE_NAME: ${{ github.workspace }}/checkstyle.xml
+          JAVA_FILE_NAME: $GITHUB_WORKSPACE/checkstyle.xml
