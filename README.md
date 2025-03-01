@@ -45,6 +45,10 @@ Make sure that you have installed locally:
     ```
 3. The server should now be running on http://localhost:8080 
 
+#### Linter
+
+In order to run linter locally on VSC, make sure that you installed "Checkstyle for Java" extension.
+
 ## Deployment to Google Cloud Platform (GCP)
 
 This application is deployed on **Google Cloud Platform (GCP)** using **Cloud Run**.  

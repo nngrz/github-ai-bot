@@ -1,12 +1,11 @@
 package com.githubai.bot;
 
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
-
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AppController {
@@ -16,7 +15,8 @@ public class AppController {
         return "ok";
     }
 
-    // TODO(#20): Unify this method with postHandler since both return the same response structure.
+    // TODO(#20): Unify this method with postHandler since both return the same
+    // response structure.
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> healthCheck() {
         return ResponseEntity.ok(Map.of("status", "ok"));
