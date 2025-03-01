@@ -34,4 +34,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_JAVA: true
+          LINTER_RULES_PATH: .
           JAVA_FILE_NAME: $GITHUB_WORKSPACE/checkstyle.xml
