@@ -24,9 +24,6 @@ jobs:
           # list of files that changed across commits
           fetch-depth: 0
 
-      - name: Set GITHUB_WORKSPACE environment variable
-        run: echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-
       - name: Super-linter
         uses: super-linter/super-linter@v7.3.0 # x-release-please-version
         env:
