@@ -29,7 +29,8 @@ jobs:
         env:
           # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_ALL_CODEBASE: true
+          FILTER_REGEX_INCLUDE: '\.java$'
           VALIDATE_JAVA: true
           LINTER_RULES_PATH: .
           JAVA_FILE_NAME: checkstyle.xml
