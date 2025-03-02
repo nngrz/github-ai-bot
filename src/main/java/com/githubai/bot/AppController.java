@@ -18,7 +18,8 @@ public class AppController {
         return "ok";
     }
 
-    // TODO(#20): Unify this method with postHandler since both return the same response structure.
+    // TODO(#20): Unify this method with postHandler since both return the same
+    // response structure.
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> healthCheck() {
         return ResponseEntity.ok(Map.of("status", "ok"));
