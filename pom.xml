@@ -11,7 +11,7 @@
 	
 	<groupId>com.githubai</groupId>
 	<artifactId>github-ai-bot</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>github-ai-bot</name>
 	<description>GitHub AI Bot – Coding Assistant</description>
 	<url/>
