@@ -2,6 +2,7 @@ package com.githubai.bot;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,14 @@ public class AppController {
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> healthCheck() {
         return ResponseEntity.ok(Map.of("status", "ok"));
+    }
+
+    @Value("${build.version}")
+    private String projectVersion;
+
+    @GetMapping("/version")
+    public ResponseEntity<Map<String, String>> getVersion() {
+        return ResponseEntity.ok(Map.of("version", projectVersion));
     }
 
     @PostMapping("/webhook")
