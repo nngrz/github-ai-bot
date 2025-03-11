@@ -1,16 +1,23 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
-The format is based on Keep a Changelog,
-and this project adheres to Semantic Versioning.
-
 ## [0.0.1] - 2025-03-11
 
 ### Added
 
-Implemented /version endpoint to return application version from pom.xml.
+- **CHANGELOG.md**: Created to track project updates.    
 
-Created CHANGELOG.md to track project updates.
+- **Linter Setup**: Configured ESLint locally and integrated it with GitHub Actions.
 
-Configured maven-jar-plugin to include pom.properties file in build artifacts.
+- **/version Endpoint**: Returns application version from `pom.xml`; configured `maven-jar-plugin` to include `pom.properties` in build artifacts.
+
+- **/health Endpoint**: Added a GET endpoint for health checks.  
+
+- **Java Bot Deployment**: Successfully deployed the bot to Google Cloud Platform (GCP).  
+
+- **POST Request Handler**: Implemented the first POST request.  
+
+- **Spring Boot Setup**: Established the foundational structure for the backend.
+
+### Fixed
+
+- **Diagram Arrow**: Adjusted arrow behavior to correctly point to GitHub.
