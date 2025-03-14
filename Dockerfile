@@ -5,7 +5,7 @@ FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
 # Copy the built JAR file into the container
-COPY target/github-ai-bot-0.0.1.jar app.jar
+COPY target/*.jar app.jar
 
 # Command to run the Spring Boot app
 ENTRYPOINT ["java", "-jar", "app.jar"]
