@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class AppController {
 
+    private static final ResponseEntity<Map<String, String>> responseOK =
+        ResponseEntity.ok(Map.of("status", "ok"));
+
     @GetMapping("/")
     public String index() {
         return "ok";
@@ -18,7 +21,7 @@ public class AppController {
     // response structure.
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> healthCheck() {
-        return ResponseEntity.ok(Map.of("status", "ok"));
+        return responseOK;
     }
 
     @Value("${build.version}")
@@ -30,29 +33,12 @@ public class AppController {
     }
 
     @PostMapping("/webhook")
-    public ResponseEntity<ResponseMessage> postHandler(@RequestBody WebhookPayload payload) {
+    public ResponseEntity<Map<String, String>> postHandler(@RequestBody WebhookPayload payload) {
         String action = payload.getAction();
         System.out.println("[POST] /webhook action: " + action);
-        return ResponseEntity.ok(new ResponseMessage("ok"));
+        return responseOK;
     }
-
-    // Define a simple ResponseMessage class
-    static class ResponseMessage {
-        private String status;
-
-        public ResponseMessage(String status) {
-            this.status = status;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public void setStatus(String status) {
-            this.status = status;
-        }
-    }
-
+    
     // Payload class for extracting "action" from JSON
     static class WebhookPayload {
         private String action;
