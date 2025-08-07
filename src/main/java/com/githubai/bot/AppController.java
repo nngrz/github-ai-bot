@@ -5,8 +5,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AppController {
@@ -32,9 +30,10 @@ public class AppController {
     }
 
     @PostMapping("/webhook")
-    public ResponseEntity<ResponseMessage> postHandler() {
-        ResponseMessage response = new ResponseMessage("ok");
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ResponseMessage> postHandler(@RequestBody WebhookPayload payload) {
+        String action = payload.getAction();
+        System.out.println("[POST] /webhook action: " + action);
+        return ResponseEntity.ok(new ResponseMessage("ok"));
     }
 
     // Define a simple ResponseMessage class
@@ -51,6 +50,19 @@ public class AppController {
 
         public void setStatus(String status) {
             this.status = status;
+        }
+    }
+
+    // Payload class for extracting "action" from JSON
+    static class WebhookPayload {
+        private String action;
+
+        public String getAction() {
+            return action;
+        }
+
+        public void setAction(String action) {
+            this.action = action;
         }
     }
 }
