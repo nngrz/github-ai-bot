@@ -69,7 +69,7 @@ Make sure that you have installed locally:
 
     * Authenticate with `gcloud auth login` and `gcloud auth configure-docker`.  
 
-    * Set the `PROJECT_ID` environment variable: `export PROJECT_ID="your-gcp-project-id"`. Replace `"your-gcp-project-id"` with your actual project ID.  
+    * Set the `PROJECT_ID` environment variable: `export PROJECT_ID="your-gcp-project-id"`. Replace `"your-gcp-project-id"` with your actual project ID.
 
 2.  **Update `pom.xml`:**
     * Change the `<version>` tag in `pom.xml` to the desired version.
@@ -79,10 +79,45 @@ Make sure that you have installed locally:
 
 The `deploy.sh` script will automatically:
 
--  Extract the version from `pom.xml`.  
+-  Extract the version from `pom.xml`.
 
--  Build and submit the Docker image to Google Cloud Build.  
+-  Build and submit the Docker image to Google Cloud Build.
 
 -  Deploy the image to Cloud Run.
 
-<!-- Test CD in Main -->
+## Continuous Deployment (CD) (Updated: Aug 13, 2025)
+
+This project is continuously deployed via **GitHub Actions** and **Google Cloud Build** to **Cloud Run**.
+
+### How It Works
+
+- The workflow file is located at `.github/workflows/deploy.yml`.
+- It runs **automatically on every push to the `main` branch**.
+- The workflow steps:
+  1. Set up the Java environment.
+  2. Build the project using Maven.
+  3. Submit the Docker image to **Google Cloud Build**.
+  4. Push the image to **Google Container Registry**.
+  5. Deploy the image to **Cloud Run**.
+
+### GitHub Secrets Required
+
+- `GCP_PROJECT_ID` – Your GCP project ID.
+- `GCP_REGION` – The region for Cloud Run (e.g., `europe-west1`).
+- `GCP_SERVICE_KEY` – JSON key for the service account with deployment permissions.
+
+### How to Test CD
+
+To test the CD pipeline:
+
+1. Push any commit to the `main` branch:
+    ```bash
+    git add .
+    git commit -m "Test CD"
+    git push origin main
+    ```
+
+2. Watch the workflow in the **Actions** tab on GitHub.
+
+3. Or visit the **Google Cloud Console > Cloud Build** to monitor the build and deploy process.
+
