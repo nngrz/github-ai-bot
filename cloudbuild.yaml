@@ -1,0 +1,3 @@
+steps:
+  - name: 'gcr.io/cloud-builders/echo'
+    args: ['Hello, Cloud Build is working!']
