@@ -2,8 +2,9 @@ name: Deploy to GCP
 
 on:
   push:
+    # TODO: change branches to main
     branches:
-      - main
+      - cd
 
 jobs:
   deploy:
