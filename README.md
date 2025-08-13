@@ -84,3 +84,5 @@ The `deploy.sh` script will automatically:
 -  Build and submit the Docker image to Google Cloud Build.  
 
 -  Deploy the image to Cloud Run.
+
+<!-- Test CD in Main -->
