@@ -17,8 +17,6 @@ public class AppController {
         return "ok";
     }
 
-    // TODO(#20): Unify this method with postHandler since both return the same
-    // response structure.
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> healthCheck() {
         return responseOK;
@@ -38,7 +36,7 @@ public class AppController {
         System.out.println("[POST] /webhook action: " + action);
         return responseOK;
     }
-    
+
     // Payload class for extracting "action" from JSON
     static class WebhookPayload {
         private String action;
