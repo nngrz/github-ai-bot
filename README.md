@@ -62,19 +62,25 @@ Make sure that you have installed locally:
 
 ### Basic Deployment Steps  
 
-1. **To deploy the Java bot, a project ID is needed:**  
-Go to the Google Cloud Console, navigate to the Project Selector page, select or create a project, and note the project ID.
+1.  **Set up GCP**  
+    * Ensure you have a Google Cloud Project.  
 
-1. **Set project ID:**  
-    ```sh
-    PROJECT_ID=<here_goes_your_project_id>
-    ```  
+    * Enable the Cloud Run API, Container Registry API, and Cloud Build API.  
 
-1. **Build and submit the image to Google Cloud Build:**
-    ```sh
-    gcloud builds submit --tag gcr.io/${PROJECT_ID:?"PROJECT_ID NOT SET"}/github-ai-bot
-    ```  
-1. **Deploy the application to Cloud Run:** 
-    ```sh
-    gcloud run deploy github-ai-bot --image gcr.io/${PROJECT_ID:?"PROJECT_ID NOT SET"}/github-ai-bot --platform managed --region europe-west1 --allow-unauthenticated
-    ```
+    * Authenticate with `gcloud auth login` and `gcloud auth configure-docker`.  
+
+    * Set the `PROJECT_ID` environment variable: `export PROJECT_ID="your-gcp-project-id"`. Replace `"your-gcp-project-id"` with your actual project ID.  
+
+2.  **Update `pom.xml`:**
+    * Change the `<version>` tag in `pom.xml` to the desired version.
+
+3.  **Deploy:**
+    * Run `./deploy.sh` from the project's root directory.
+
+The `deploy.sh` script will automatically:
+
+-  Extract the version from `pom.xml`.  
+
+-  Build and submit the Docker image to Google Cloud Build.  
+
+-  Deploy the image to Cloud Run.

@@ -5,11 +5,12 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AppController {
+
+    private static final ResponseEntity<Map<String, String>> responseOK =
+        ResponseEntity.ok(Map.of("status", "ok"));
 
     @GetMapping("/")
     public String index() {
@@ -20,7 +21,7 @@ public class AppController {
     // response structure.
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> healthCheck() {
-        return ResponseEntity.ok(Map.of("status", "ok"));
+        return responseOK;
     }
 
     @Value("${build.version}")
@@ -32,25 +33,22 @@ public class AppController {
     }
 
     @PostMapping("/webhook")
-    public ResponseEntity<ResponseMessage> postHandler() {
-        ResponseMessage response = new ResponseMessage("ok");
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Map<String, String>> postHandler(@RequestBody WebhookPayload payload) {
+        String action = payload.getAction();
+        System.out.println("[POST] /webhook action: " + action);
+        return responseOK;
     }
+    
+    // Payload class for extracting "action" from JSON
+    static class WebhookPayload {
+        private String action;
 
-    // Define a simple ResponseMessage class
-    static class ResponseMessage {
-        private String status;
-
-        public ResponseMessage(String status) {
-            this.status = status;
+        public String getAction() {
+            return action;
         }
 
-        public String getStatus() {
-            return status;
-        }
-
-        public void setStatus(String status) {
-            this.status = status;
+        public void setAction(String action) {
+            this.action = action;
         }
     }
 }
