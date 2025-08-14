@@ -103,21 +103,4 @@ This project is continuously deployed via **GitHub Actions** and **Google Cloud 
 ### GitHub Secrets Required
 
 - `GCP_PROJECT_ID` – Your GCP project ID.
-- `GCP_REGION` – The region for Cloud Run (e.g., `europe-west1`).
 - `GCP_SERVICE_KEY` – JSON key for the service account with deployment permissions.
-
-### How to Test CD
-
-To test the CD pipeline:
-
-1. Push any commit to the `main` branch:
-    ```bash
-    git add .
-    git commit -m "Test CD"
-    git push origin main
-    ```
-
-2. Watch the workflow in the **Actions** tab on GitHub.
-
-3. Or visit the **Google Cloud Console > Cloud Build** to monitor the build and deploy process.
-
