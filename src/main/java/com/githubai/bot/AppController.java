@@ -1,8 +1,5 @@
 package com.githubai.bot;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -76,12 +73,10 @@ public class AppController {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            System.out.println("[GitHub API] PR DIFF:\n" + response.body());
+            System.out.printf("[GitHub API] PR #%d diff:\n%s%n", prNumber, response.body());
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 }
-
-// TEST synchromization
