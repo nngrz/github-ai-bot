@@ -1,5 +1,8 @@
 package com.githubai.bot;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -73,8 +76,22 @@ public class AppController {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+            String responseBody = response.body();
+
+            // Parse the JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(responseBody);
+
+            // Extract fields
+            String title = jsonNode.get("title").asText();
+            String body = jsonNode.get("body").asText();
+            String author = jsonNode.get("user").get("login").asText();
+
             System.out.println("[GitHub API] PR content:");
-            System.out.println(response.body());
+            System.out.println("Title: " + title);
+            System.out.println("Body: " + body);
+            System.out.println("Author: " + author);
+
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
