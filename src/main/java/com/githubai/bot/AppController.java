@@ -1,5 +1,10 @@
 package com.githubai.bot;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -22,19 +27,8 @@ public class AppController {
         return responseOK;
     }
 
-    // TEST
-    @GetMapping("/test-token")
-    public ResponseEntity<Map<String, String>> testGithubToken() {
-        String token = System.getenv("GITHUB_TOKEN");
-        String maskedToken = token == null ? "null" : token.substring(0, 4) + "..." + token.substring(token.length() - 4);
-        return ResponseEntity.ok(Map.of("token", maskedToken));
-    }
-
     @Value("${build.version}")
     private String projectVersion;
-
-    @Value("${GITHUB_TOKEN}")
-    private String githubToken;
 
     @GetMapping("/version")
     public ResponseEntity<Map<String, String>> getVersion() {
@@ -52,10 +46,37 @@ public class AppController {
             String owner = payload.getRepository().getOwner().getLogin();
 
             System.out.printf("[Webhook] PR #%d in repo %s/%s%n", prNumber, owner, repoName);
+
+            // Only fetch PR content for "synchronize" action
+            if ("synchronize".equals(action)) {
+                fetchPullRequestContent(owner, repoName, prNumber);
+            }
         } else {
             System.out.println("[Webhook] Missing pull request or repository data.");
         }
 
         return responseOK;
+    }
+
+    @Value("${github.token}")
+    private String githubToken;
+
+    private void fetchPullRequestContent(String owner, String repo, int prNumber) {
+        String apiUrl = String.format("https://api.github.com/repos/%s/%s/pulls/%d", owner, repo, prNumber);
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .header("Authorization", "Bearer " + githubToken)
+                .header("Accept", "application/vnd.github+json")
+                .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            System.out.println("[GitHub API] PR content:");
+            System.out.println(response.body());
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
