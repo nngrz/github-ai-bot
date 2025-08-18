@@ -22,32 +22,40 @@ public class AppController {
         return responseOK;
     }
 
+    // TEST
+    @GetMapping("/test-token")
+    public ResponseEntity<Map<String, String>> testGithubToken() {
+        String token = System.getenv("GITHUB_TOKEN");
+        String maskedToken = token == null ? "null" : token.substring(0, 4) + "..." + token.substring(token.length() - 4);
+        return ResponseEntity.ok(Map.of("token", maskedToken));
+    }
+
     @Value("${build.version}")
     private String projectVersion;
+
+    @Value("${GITHUB_TOKEN}")
+    private String githubToken;
 
     @GetMapping("/version")
     public ResponseEntity<Map<String, String>> getVersion() {
         return ResponseEntity.ok(Map.of("version", projectVersion));
     }
 
-    // TEST
     @PostMapping("/webhook")
     public ResponseEntity<Map<String, String>> postHandler(@RequestBody WebhookPayload payload) {
         String action = payload.getAction();
         System.out.println("[POST] /webhook action: " + action);
+
+        if (payload.getPullRequest() != null && payload.getRepository() != null) {
+            int prNumber = payload.getPullRequest().getNumber();
+            String repoName = payload.getRepository().getName();
+            String owner = payload.getRepository().getOwner().getLogin();
+
+            System.out.printf("[Webhook] PR #%d in repo %s/%s%n", prNumber, owner, repoName);
+        } else {
+            System.out.println("[Webhook] Missing pull request or repository data.");
+        }
+
         return responseOK;
-    }
-
-    // Payload class for extracting "action" from JSON
-    static class WebhookPayload {
-        private String action;
-
-        public String getAction() {
-            return action;
-        }
-
-        public void setAction(String action) {
-            this.action = action;
-        }
     }
 }
