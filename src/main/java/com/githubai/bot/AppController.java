@@ -71,26 +71,12 @@ public class AppController {
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl))
                 .header("Authorization", "Bearer " + githubToken)
-                .header("Accept", "application/vnd.github+json")
+                .header("Accept", "application/vnd.github.v3.diff")
                 .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            String responseBody = response.body();
-
-            // Parse the JSON
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(responseBody);
-
-            // Extract fields
-            String title = jsonNode.get("title").asText();
-            String body = jsonNode.get("body").asText();
-            String author = jsonNode.get("user").get("login").asText();
-
-            System.out.println("[GitHub API] PR content:");
-            System.out.println("Title: " + title);
-            System.out.println("Body: " + body);
-            System.out.println("Author: " + author);
+            System.out.println("[GitHub API] PR DIFF:\n" + response.body());
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
