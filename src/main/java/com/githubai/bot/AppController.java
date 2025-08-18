@@ -30,7 +30,6 @@ public class AppController {
         return ResponseEntity.ok(Map.of("version", projectVersion));
     }
 
-    // TEST webhook
     @PostMapping("/webhook")
     public ResponseEntity<Map<String, String>> postHandler(@RequestBody WebhookPayload payload) {
         String action = payload.getAction();
