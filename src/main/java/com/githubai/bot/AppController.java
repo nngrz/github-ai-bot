@@ -103,15 +103,15 @@ public class AppController {
 
         String requestBody = String.format("""
             {
-              "contents": [
+            "contents": [
                 {
-                  "parts": [
+                "parts": [
                     {
-                      "text": "You are a code reviewer. Review the following pull request diff and give suggestions:\\n%s"
+                    "text": "You are a code reviewer. Review the following pull request diff and give suggestions:\\n%s"
                     }
-                  ]
+                ]
                 }
-              ]
+            ]
             }
             """, prDiff);
 
@@ -125,12 +125,12 @@ public class AppController {
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode json = mapper.readTree(response.body());
+            String rawResponse = response.body();
+            System.out.println("[Gemini API] Raw response:");
+            System.out.println(rawResponse);
 
-            // Log the full response to verify structure
-            System.out.println("[DEBUG] Raw Gemini response:");
-            System.out.println(json.toPrettyString());
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode json = mapper.readTree(rawResponse);
 
             JsonNode content = json.at("/candidates/0/content/parts/0/text");
 
