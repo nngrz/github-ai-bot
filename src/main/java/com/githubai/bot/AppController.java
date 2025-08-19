@@ -84,6 +84,7 @@ public class AppController {
 
             String review = callGeminiAPI(prDiff);
             if (review != null && !review.isBlank()) {
+                System.out.println("[DEBUG] Review generated, posting to GitHub..."); // TEST
                 postPRComment(owner, repo, prNumber, review);
             }
 
@@ -144,6 +145,10 @@ public class AppController {
     private void postPRComment(String owner, String repo, int prNumber, String commentBody) {
         String apiUrl = String.format("https://api.github.com/repos/%s/%s/issues/%d/comments", owner, repo, prNumber);
 
+        System.out.println("[DEBUG] Posting comment to PR..."); // TEST
+        System.out.println("[DEBUG] Comment content:"); // TEST
+        System.out.println(commentBody);
+
         try {
             ObjectMapper mapper = new ObjectMapper();
             String jsonBody = mapper.writeValueAsString(Map.of("body", commentBody));
@@ -159,11 +164,21 @@ public class AppController {
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            System.out.println("[GitHub API] Comment posted to PR.");
-            System.out.println(response.body());
+            int statusCode = response.statusCode();
+            String responseBody = response.body();
+
+            System.out.println("[GitHub API] Status code: " + statusCode);
+            System.out.println("[GitHub API] Response body:");
+            System.out.println(responseBody);
+
+            if (statusCode == 201) {
+                System.out.println("[GitHub API] Comment successfully posted to PR.");
+            } else {
+                System.err.println("[GitHub API] Failed to post comment. Check token permissions and repo/PR details.");
+            }
 
         } catch (IOException | InterruptedException e) {
-            System.err.println("[GitHub API] Failed to post comment:");
+            System.err.println("[GitHub API] Exception occurred while posting comment:");
             e.printStackTrace();
         }
     }
