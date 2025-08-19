@@ -88,6 +88,9 @@ public class AppController {
     private String geminiApiKey;
 
     private void callGeminiAPI(String prDiff) {
+
+        System.out.println("[Gemini API] Calling Gemini...");
+
         String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
 
         String requestBody = String.format("""
