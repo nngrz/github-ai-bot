@@ -84,8 +84,10 @@ public class AppController {
 
             String review = callGeminiAPI(prDiff);
             if (review != null && !review.isBlank()) {
-                System.out.println("[DEBUG] Review generated, posting to GitHub..."); // TEST
+                System.out.println("[DEBUG] Review is valid, posting comment...");
                 postPRComment(owner, repo, prNumber, review);
+            } else {
+                System.out.println("[DEBUG] Review is null or blank. Skipping comment post.");
             }
 
         } catch (IOException | InterruptedException e) {
