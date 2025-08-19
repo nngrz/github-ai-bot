@@ -20,6 +20,15 @@ public class AppController {
     private static final ResponseEntity<Map<String, String>> responseOK =
         ResponseEntity.ok(Map.of("status", "ok"));
 
+    @Value("${build.version}")
+    private String projectVersion;
+
+    @Value("${github.token}")
+    private String githubToken;
+
+    @Value("${gemini.api.key}")
+    private String geminiApiKey;
+
     @GetMapping("/")
     public String index() {
         return "ok";
@@ -30,9 +39,6 @@ public class AppController {
         return responseOK;
     }
 
-    @Value("${build.version}")
-    private String projectVersion;
-
     @GetMapping("/version")
     public ResponseEntity<Map<String, String>> getVersion() {
         return ResponseEntity.ok(Map.of("version", projectVersion));
@@ -40,27 +46,16 @@ public class AppController {
 
     @PostMapping("/webhook")
     public ResponseEntity<Map<String, String>> postHandler(@RequestBody WebhookPayload payload) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(payload);
-            System.out.println("[DEBUG] Received WebhookPayload:");
-            System.out.println(json);
-        } catch (Exception e) {
-            System.out.println("[ERROR] Failed to log payload");
-            e.printStackTrace();
-        }
-
         String action = payload.getAction();
-        System.out.println("[POST] /webhook action: " + action);
+        System.out.println("[Webhook] Received action: " + action);
 
         if (payload.getPullRequest() != null && payload.getRepository() != null) {
             int prNumber = payload.getPullRequest().getNumber();
             String repoName = payload.getRepository().getName();
             String owner = payload.getRepository().getOwner().getLogin();
 
-            System.out.printf("[Webhook] PR #%d in repo %s/%s%n", prNumber, owner, repoName);
+            System.out.printf("[Webhook] PR #%d in %s/%s%n", prNumber, owner, repoName);
 
-            // Only fetch PR content for "synchronize" action
             if ("synchronize".equals(action)) {
                 fetchPullRequestContent(owner, repoName, prNumber);
             }
@@ -71,51 +66,45 @@ public class AppController {
         return responseOK;
     }
 
-    @Value("${github.token}")
-    private String githubToken;
-
     private void fetchPullRequestContent(String owner, String repo, int prNumber) {
         String apiUrl = String.format("https://api.github.com/repos/%s/%s/pulls/%d", owner, repo, prNumber);
+
         try {
-            HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl))
                 .header("Authorization", "Bearer " + githubToken)
                 .header("Accept", "application/vnd.github.v3.diff")
                 .build();
 
+            HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             String prDiff = response.body();
-            System.out.printf("[GitHub API] PR #%d diff:\n%s%n", prNumber, prDiff);
-            System.out.println("[DEBUG] Calling Gemini API with PR diff..."); // TEST
+            System.out.printf("[GitHub API] PR #%d diff fetched%n", prNumber);
+
             callGeminiAPI(prDiff);
-            System.out.println("[DEBUG] Gemini API call finished."); // TEST
         } catch (IOException | InterruptedException e) {
+            System.err.println("[GitHub API] Failed to fetch PR diff:");
             e.printStackTrace();
         }
     }
 
-    @Value("${gemini.api.key}")
-    private String geminiApiKey;
-
     private void callGeminiAPI(String prDiff) {
-
-        System.out.println("[Gemini API] Calling Gemini...");
+        System.out.println("[Gemini API] Sending PR diff for review...");
 
         String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
 
         String requestBody = String.format("""
             {
-            "contents": [
+              "contents": [
                 {
-                "parts": [
+                  "parts": [
                     {
-                    "text": "You are a code reviewer. Review the following pull request diff and give suggestions:\\n%s"
+                      "text": "You are a code reviewer. Review the following pull request diff and give suggestions:\\n%s"
                     }
-                ]
+                  ]
                 }
-            ]
+              ]
             }
             """, prDiff);
 
@@ -132,10 +121,10 @@ public class AppController {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode json = mapper.readTree(response.body());
 
-            System.out.println("[Gemini API] Code Review Suggestions:");
+            System.out.println("[Gemini API] Review Suggestions:");
             System.out.println(json.toPrettyString());
-
         } catch (IOException | InterruptedException e) {
+            System.err.println("[Gemini API] Error during request:");
             e.printStackTrace();
         }
     }
