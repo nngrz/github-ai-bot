@@ -40,6 +40,16 @@ public class AppController {
 
     @PostMapping("/webhook")
     public ResponseEntity<Map<String, String>> postHandler(@RequestBody WebhookPayload payload) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(payload);
+            System.out.println("[DEBUG] Received WebhookPayload:");
+            System.out.println(json);
+        } catch (Exception e) {
+            System.out.println("[ERROR] Failed to log payload");
+            e.printStackTrace();
+        }
+
         String action = payload.getAction();
         System.out.println("[POST] /webhook action: " + action);
 
