@@ -2,6 +2,8 @@ package com.githubai.bot;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.net.URI;
@@ -101,37 +103,39 @@ public class AppController {
 
         String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
 
-        String requestBody = String.format("""
-            {
-            "contents": [
-                {
-                "parts": [
-                    {
-                    "text": "You are a code reviewer. Review the following pull request diff and give suggestions:\\n%s"
-                    }
-                ]
-                }
-            ]
-            }
-            """, prDiff);
-
         try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            ObjectNode textNode = mapper.createObjectNode();
+            textNode.put("text", "You are a code reviewer. Review the following pull request diff and give suggestions:\n" + prDiff);
+
+            ArrayNode partsArray = mapper.createArrayNode();
+            partsArray.add(textNode);
+
+            ObjectNode contentNode = mapper.createObjectNode();
+            contentNode.set("parts", partsArray);
+
+            ArrayNode contentsArray = mapper.createArrayNode();
+            contentsArray.add(contentNode);
+
+            ObjectNode requestBody = mapper.createObjectNode();
+            requestBody.set("contents", contentsArray);
+
+            String jsonRequest = mapper.writeValueAsString(requestBody);
+
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl))
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
                 .build();
 
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            String rawResponse = response.body();
-            System.out.println("[Gemini API] Raw response:");
-            System.out.println(rawResponse);
+            String responseBody = response.body();
+            System.out.println("[DEBUG] Raw Gemini response:\n" + responseBody);
 
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode json = mapper.readTree(rawResponse);
-
+            JsonNode json = mapper.readTree(responseBody);
             JsonNode content = json.at("/candidates/0/content/parts/0/text");
 
             if (content.isMissingNode() || content.asText().isBlank()) {
@@ -140,10 +144,7 @@ public class AppController {
             }
 
             String review = content.asText();
-
-            System.out.println("[Gemini API] Review Suggestions:");
-            System.out.println(review);
-
+            System.out.println("[Gemini API] Review Suggestions:\n" + review);
             return review;
 
         } catch (IOException | InterruptedException e) {
@@ -152,6 +153,7 @@ public class AppController {
             return null;
         }
     }
+
 
     private void postPRComment(String owner, String repo, int prNumber, String commentBody) {
         String apiUrl = String.format("https://api.github.com/repos/%s/%s/issues/%d/comments", owner, repo, prNumber);
