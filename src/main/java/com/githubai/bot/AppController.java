@@ -128,11 +128,20 @@ public class AppController {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode json = mapper.readTree(response.body());
 
+            // Log the full response to verify structure
+            System.out.println("[DEBUG] Raw Gemini response:");
+            System.out.println(json.toPrettyString());
+
             JsonNode content = json.at("/candidates/0/content/parts/0/text");
+
+            if (content.isMissingNode() || content.asText().isBlank()) {
+                System.out.println("[Gemini API] No valid review returned.");
+                return null;
+            }
+
             String review = content.asText();
 
             System.out.println("[Gemini API] Review Suggestions:");
-
             System.out.println(review);
 
             return review;
@@ -185,5 +194,3 @@ public class AppController {
         }
     }
 }
-
-// TEST
