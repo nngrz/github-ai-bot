@@ -1,5 +1,10 @@
 package com.githubai.bot;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -34,19 +39,44 @@ public class AppController {
     public ResponseEntity<Map<String, String>> postHandler(@RequestBody WebhookPayload payload) {
         String action = payload.getAction();
         System.out.println("[POST] /webhook action: " + action);
+
+        if (payload.getPullRequest() != null && payload.getRepository() != null) {
+            int prNumber = payload.getPullRequest().getNumber();
+            String repoName = payload.getRepository().getName();
+            String owner = payload.getRepository().getOwner().getLogin();
+
+            System.out.printf("[Webhook] PR #%d in repo %s/%s%n", prNumber, owner, repoName);
+
+            // Only fetch PR content for "synchronize" action
+            if ("synchronize".equals(action)) {
+                fetchPullRequestContent(owner, repoName, prNumber);
+            }
+        } else {
+            System.out.println("[Webhook] Missing pull request or repository data.");
+        }
+
         return responseOK;
     }
 
-    // Payload class for extracting "action" from JSON
-    static class WebhookPayload {
-        private String action;
+    @Value("${github.token}")
+    private String githubToken;
 
-        public String getAction() {
-            return action;
-        }
+    private void fetchPullRequestContent(String owner, String repo, int prNumber) {
+        String apiUrl = String.format("https://api.github.com/repos/%s/%s/pulls/%d", owner, repo, prNumber);
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .header("Authorization", "Bearer " + githubToken)
+                .header("Accept", "application/vnd.github.v3.diff")
+                .build();
 
-        public void setAction(String action) {
-            this.action = action;
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            System.out.printf("[GitHub API] PR #%d diff:\n%s%n", prNumber, response.body());
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -2,8 +2,10 @@ name: Deploy to GCP
 
 on:
   push:
+    # TEST
+    # a test line
     branches:
-      - main
+      - deploy
 
 jobs:
   deploy:
