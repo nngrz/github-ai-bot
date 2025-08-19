@@ -7,6 +7,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,13 +30,19 @@ public class AppController {
         return responseOK;
     }
 
-    @Value("${build.version}")
-    private String projectVersion;
-
     @GetMapping("/version")
     public ResponseEntity<Map<String, String>> getVersion() {
         return ResponseEntity.ok(Map.of("version", projectVersion));
     }
+
+    @Value("${build.version}")
+    private String projectVersion;
+
+    @Value("${github.token}")
+    private String githubToken;
+
+    @Value("${gemini.api.key}")
+    private String geminiApiKey;
 
     @PostMapping("/webhook")
     public ResponseEntity<Map<String, String>> postHandler(@RequestBody WebhookPayload payload) {
@@ -58,9 +67,6 @@ public class AppController {
         return responseOK;
     }
 
-    @Value("${github.token}")
-    private String githubToken;
-
     private void fetchPullRequestContent(String owner, String repo, int prNumber) {
         String apiUrl = String.format("https://api.github.com/repos/%s/%s/pulls/%d", owner, repo, prNumber);
         try {
@@ -73,7 +79,46 @@ public class AppController {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            System.out.printf("[GitHub API] PR #%d diff:\n%s%n", prNumber, response.body());
+            String prDiff = response.body();
+            System.out.printf("[GitHub API] PR #%d diff:\n%s%n", prNumber, prDiff);
+            callGeminiAPI(prDiff);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void callGeminiAPI(String prDiff) {
+        String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
+
+        String requestBody = String.format("""
+            {
+            "contents": [
+                {
+                "parts": [
+                    {
+                    "text": "You are a code reviewer. Review the following pull request diff and give suggestions:\\n%s"
+                    }
+                ]
+                }
+            ]
+            }
+            """, prDiff);
+
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .build();
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode json = mapper.readTree(response.body());
+
+            System.out.println("[Gemini API] Code Review Suggestions:");
+            System.out.println(json.toPrettyString());
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
