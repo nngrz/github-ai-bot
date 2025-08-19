@@ -78,7 +78,9 @@ public class AppController {
 
             String prDiff = response.body();
             System.out.printf("[GitHub API] PR #%d diff:\n%s%n", prNumber, prDiff);
+            System.out.println("[DEBUG] Calling Gemini API with PR diff..."); // TEST
             callGeminiAPI(prDiff);
+            System.out.println("[DEBUG] Gemini API call finished."); // TEST
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
