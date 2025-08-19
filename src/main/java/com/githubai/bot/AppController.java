@@ -30,19 +30,13 @@ public class AppController {
         return responseOK;
     }
 
+    @Value("${build.version}")
+    private String projectVersion;
+
     @GetMapping("/version")
     public ResponseEntity<Map<String, String>> getVersion() {
         return ResponseEntity.ok(Map.of("version", projectVersion));
     }
-
-    @Value("${build.version}")
-    private String projectVersion;
-
-    @Value("${github.token}")
-    private String githubToken;
-
-    @Value("${gemini.api.key}")
-    private String geminiApiKey;
 
     @PostMapping("/webhook")
     public ResponseEntity<Map<String, String>> postHandler(@RequestBody WebhookPayload payload) {
@@ -67,6 +61,9 @@ public class AppController {
         return responseOK;
     }
 
+    @Value("${github.token}")
+    private String githubToken;
+
     private void fetchPullRequestContent(String owner, String repo, int prNumber) {
         String apiUrl = String.format("https://api.github.com/repos/%s/%s/pulls/%d", owner, repo, prNumber);
         try {
@@ -86,6 +83,9 @@ public class AppController {
             e.printStackTrace();
         }
     }
+
+    @Value("${gemini.api.key}")
+    private String geminiApiKey;
 
     private void callGeminiAPI(String prDiff) {
         String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
