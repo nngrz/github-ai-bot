@@ -70,26 +70,30 @@ public class AppController {
         String apiUrl = String.format("https://api.github.com/repos/%s/%s/pulls/%d", owner, repo, prNumber);
 
         try {
+            HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl))
                 .header("Authorization", "Bearer " + githubToken)
                 .header("Accept", "application/vnd.github.v3.diff")
                 .build();
 
-            HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
             String prDiff = response.body();
+
             System.out.printf("[GitHub API] PR #%d diff fetched%n", prNumber);
 
-            callGeminiAPI(prDiff);
+            String review = callGeminiAPI(prDiff);
+            if (review != null && !review.isBlank()) {
+                postPRComment(owner, repo, prNumber, review);
+            }
+
         } catch (IOException | InterruptedException e) {
             System.err.println("[GitHub API] Failed to fetch PR diff:");
             e.printStackTrace();
         }
     }
 
-    private void callGeminiAPI(String prDiff) {
+    private String callGeminiAPI(String prDiff) {
         System.out.println("[Gemini API] Sending PR diff for review...");
 
         String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
@@ -121,10 +125,45 @@ public class AppController {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode json = mapper.readTree(response.body());
 
+            JsonNode content = json.at("/candidates/0/content/parts/0/text");
+            String review = content.asText();
+
             System.out.println("[Gemini API] Review Suggestions:");
-            System.out.println(json.toPrettyString());
+
+            System.out.println(review);
+
+            return review;
+
         } catch (IOException | InterruptedException e) {
             System.err.println("[Gemini API] Error during request:");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void postPRComment(String owner, String repo, int prNumber, String commentBody) {
+        String apiUrl = String.format("https://api.github.com/repos/%s/%s/issues/%d/comments", owner, repo, prNumber);
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonBody = mapper.writeValueAsString(Map.of("body", commentBody));
+
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .header("Authorization", "Bearer " + githubToken)
+                .header("Accept", "application/vnd.github.v3+json")
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                .build();
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            System.out.println("[GitHub API] Comment posted to PR.");
+            System.out.println(response.body());
+
+        } catch (IOException | InterruptedException e) {
+            System.err.println("[GitHub API] Failed to post comment:");
             e.printStackTrace();
         }
     }
