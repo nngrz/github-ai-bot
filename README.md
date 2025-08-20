@@ -21,7 +21,7 @@ The GitHub AI Bot – Coding Assistant is an AI-powered code review bot for all 
 - `synchronize`: Triggered when new commits are pushed to an existing PR.
 
 ### Demo
-<!-- I will add a .gif to show GitHub AI Bot in action -->
+![PR with AI comment](images/ai-review-comment.png)
 
 ## How to Run Locally
 
