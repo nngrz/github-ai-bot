@@ -11,17 +11,14 @@ The GitHub AI Bot – Coding Assistant is an AI-powered code review bot for all 
 
 3️⃣ Bot fetches the PR code
 
-4️⃣ Bot sends the code to an AI model - uses DeepSeek API (or another LLM) for analysis.  
+4️⃣ Bot sends the code to an AI model – uses Gemini API (or another LLM) for analysis.
 
-5️⃣ Bot comments on the PR. Provides AI-generated code reviews with suggestions and fixes. 
+5️⃣ Bot comments on the PR with AI-generated code review suggestions and fixes.
 
-### Features
+### Supported GitHub Events
 
-✅ Automated Code Review – AI detects bad practices and suggests improvements.  
-
-✅ Code Analysis – Specialized for all programming language projects.   
-
-✅ Customizable AI Model – Uses DeepSeek or any other AI model for analysis.
+- `opened`: Triggered when a new PR is created.
+- `synchronize`: Triggered when new commits are pushed to an existing PR.
 
 ## How to Run Locally
 
@@ -43,7 +40,7 @@ Make sure that you have installed locally:
     ```
     mvn spring-boot:run
     ```
-3. The server should now be running on http://localhost:8080 
+3. The server should now be running on http://localhost:8080
 
 #### Linter
 
@@ -51,23 +48,23 @@ In order to run linter locally on VSC, make sure that you installed "Checkstyle 
 
 ## Deployment to Google Cloud Platform (GCP)
 
-This application is deployed on **Google Cloud Platform (GCP)** using **Cloud Run**.  
+This application is deployed on **Google Cloud Platform (GCP)** using **Cloud Run**.
 
 **Live URL:** [GitHub AI Bot](https://github-ai-bot-658818439028.europe-west1.run.app)
 
 #### Requirements
 
-Make sure that you have installed locally:  
+Make sure that you have installed locally:
 - Google Cloud SDK (`gcloud` CLI) configured with your project.
 
-### Basic Deployment Steps  
+### Basic Deployment Steps
 
-1.  **Set up GCP**  
-    * Ensure you have a Google Cloud Project.  
+1.  **Set up GCP**
+    * Ensure you have a Google Cloud Project.
 
-    * Enable the Cloud Run API, Container Registry API, and Cloud Build API.  
+    * Enable the Cloud Run API, Container Registry API, and Cloud Build API.
 
-    * Authenticate with `gcloud auth login` and `gcloud auth configure-docker`.  
+    * Authenticate with `gcloud auth login` and `gcloud auth configure-docker`.
 
     * Set the `PROJECT_ID` environment variable: `export PROJECT_ID="your-gcp-project-id"`. Replace `"your-gcp-project-id"` with your actual project ID.
 
@@ -92,7 +89,7 @@ This project is continuously deployed via **GitHub Actions** and **Google Cloud 
 ### How It Works
 
 - The workflow file is located at `.github/workflows/deploy.yml`.
-- It runs **automatically on every push to the `main` branch**.
+- It runs **automatically on every push to the `deploy` branch**.
 - The workflow steps:
   1. Set up the Java environment.
   2. Build the project using Maven.
