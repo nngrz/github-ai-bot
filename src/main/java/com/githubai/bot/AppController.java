@@ -31,6 +31,8 @@ public class AppController {
     @Value("${gemini.api.key}")
     private String geminiApiKey;
 
+    // -------------------- Health + Info Endpoints --------------------
+
     @GetMapping("/")
     public String index() {
         return "ok";
@@ -45,6 +47,8 @@ public class AppController {
     public ResponseEntity<Map<String, String>> getVersion() {
         return ResponseEntity.ok(Map.of("version", projectVersion));
     }
+
+    // -------------------- GitHub Webhook Handler --------------------
 
     @PostMapping("/webhook")
     public ResponseEntity<Map<String, String>> postHandler(@RequestBody WebhookPayload payload) {
@@ -68,28 +72,29 @@ public class AppController {
         return responseOK;
     }
 
+    // -------------------- Fetch PR Diff from GitHub --------------------
+
     private void fetchPullRequestContent(String owner, String repo, int prNumber) {
         String apiUrl = String.format("https://api.github.com/repos/%s/%s/pulls/%d", owner, repo, prNumber);
 
         try {
-            HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl))
                 .header("Authorization", "Bearer " + githubToken)
                 .header("Accept", "application/vnd.github.v3.diff")
                 .build();
 
+            HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            String prDiff = response.body();
 
+            String prDiff = response.body();
             System.out.printf("[GitHub API] PR #%d diff fetched%n", prNumber);
 
             String review = callGeminiAPI(prDiff);
             if (review != null && !review.isBlank()) {
-                System.out.println("[DEBUG] Review is valid, posting comment...");
                 postPRComment(owner, repo, prNumber, review);
             } else {
-                System.out.println("[DEBUG] Review is null or blank. Skipping comment post.");
+                System.out.println("Review is null or blank. Skipping comment post.");
             }
 
         } catch (IOException | InterruptedException e) {
@@ -97,6 +102,8 @@ public class AppController {
             e.printStackTrace();
         }
     }
+
+    // -------------------- Call Gemini API --------------------
 
     private String callGeminiAPI(String prDiff) {
         System.out.println("[Gemini API] Sending PR diff for review...");
@@ -109,17 +116,10 @@ public class AppController {
             ObjectNode textNode = mapper.createObjectNode();
             textNode.put("text", "You are a code reviewer. Review the following pull request diff and give suggestions:\n" + prDiff);
 
-            ArrayNode partsArray = mapper.createArrayNode();
-            partsArray.add(textNode);
-
-            ObjectNode contentNode = mapper.createObjectNode();
-            contentNode.set("parts", partsArray);
-
-            ArrayNode contentsArray = mapper.createArrayNode();
-            contentsArray.add(contentNode);
-
-            ObjectNode requestBody = mapper.createObjectNode();
-            requestBody.set("contents", contentsArray);
+            ArrayNode partsArray = mapper.createArrayNode().add(textNode);
+            ObjectNode contentNode = mapper.createObjectNode().set("parts", partsArray);
+            ArrayNode contentsArray = mapper.createArrayNode().add(contentNode);
+            ObjectNode requestBody = mapper.createObjectNode().set("contents", contentsArray);
 
             String jsonRequest = mapper.writeValueAsString(requestBody);
 
@@ -139,12 +139,10 @@ public class AppController {
             JsonNode content = json.at("/candidates/0/content/parts/0/text");
 
             if (content.isMissingNode() || content.asText().isBlank()) {
-                System.out.println("[Gemini API] No valid review returned.");
                 return null;
             }
 
             String review = content.asText();
-            System.out.println("[Gemini API] Review Suggestions:\n" + review);
             return review;
 
         } catch (IOException | InterruptedException e) {
@@ -154,13 +152,10 @@ public class AppController {
         }
     }
 
+    // -------------------- Post Comment to GitHub PR --------------------
 
     private void postPRComment(String owner, String repo, int prNumber, String commentBody) {
         String apiUrl = String.format("https://api.github.com/repos/%s/%s/issues/%d/comments", owner, repo, prNumber);
-
-        System.out.println("[DEBUG] Posting comment to PR..."); // TEST
-        System.out.println("[DEBUG] Comment content:"); // TEST
-        System.out.println(commentBody);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -180,14 +175,13 @@ public class AppController {
             int statusCode = response.statusCode();
             String responseBody = response.body();
 
-            System.out.println("[GitHub API] Status code: " + statusCode);
-            System.out.println("[GitHub API] Response body:");
             System.out.println(responseBody);
 
             if (statusCode == 201) {
                 System.out.println("[GitHub API] Comment successfully posted to PR.");
             } else {
                 System.err.println("[GitHub API] Failed to post comment. Check token permissions and repo/PR details.");
+                System.err.println("Response: " + responseBody);
             }
 
         } catch (IOException | InterruptedException e) {
