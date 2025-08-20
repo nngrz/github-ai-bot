@@ -58,7 +58,7 @@ public class AppController {
 
             System.out.printf("[Webhook] PR #%d in %s/%s%n", prNumber, owner, repoName);
 
-            if ("synchronize".equals(action)) {
+            if ("synchronize".equals(action) || "opened".equals(action)) {
                 fetchPullRequestContent(owner, repoName, prNumber);
             }
         } else {
