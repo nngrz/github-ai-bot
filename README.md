@@ -20,6 +20,9 @@ The GitHub AI Bot – Coding Assistant is an AI-powered code review bot for all 
 - `opened`: Triggered when a new PR is created.
 - `synchronize`: Triggered when new commits are pushed to an existing PR.
 
+### Demo
+<!-- I will add a .gif to show GitHub AI Bot in action -->
+
 ## How to Run Locally
 
 This is a Spring Boot Application.
